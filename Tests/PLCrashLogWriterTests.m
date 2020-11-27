@@ -281,7 +281,7 @@
 
 - (Plcrash__CrashReport *) loadReport {
     /* Reading the report */
-    NSData *data = [NSData dataWithContentsOfFile:_logPath options:NSDataReadingMappedAlways error:nil];
+    NSData *data = [NSData dataWithContentsOfMappedFile: _logPath];
     STAssertNotNil(data, @"Could not map pages");
     
     /* Check the file magic. The file must be large enough for the value + version + data */

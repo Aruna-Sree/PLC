@@ -139,6 +139,10 @@ message CrashReport {
 
         /* Application marketing version string */
         optional string marketing_version = 3;
+        
+        /*Session Id String */
+       required string sessionId = 4;
+       optional bytes data = 5;
     }
     required ApplicationInfo application_info = 2;
     

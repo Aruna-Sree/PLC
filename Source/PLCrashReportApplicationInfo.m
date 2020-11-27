@@ -43,9 +43,11 @@
  * @param applicationVersion Application version. This is usually the CFBundleVersion value.
  * @param applicationMarketingVersion Application marketing version.
  */
-- (id) initWithApplicationIdentifier: (NSString *) applicationIdentifier 
+- (id) initWithApplicationIdentifier: (NSString *) applicationIdentifier
                   applicationVersion: (NSString *) applicationVersion
          applicationMarketingVersion: (NSString *) applicationMarketingVersion
+                          sessionId : (NSString *) sessionId
+                     applicationData: (NSData *)   applicationData
 {
     if ((self = [super init]) == nil)
         return nil;
@@ -54,11 +56,15 @@
     _applicationVersion = applicationVersion;
     _applicationMarketingVersion = applicationMarketingVersion;
 
+    _applicationData = applicationData;
+    _sessionId = sessionId;
+    
     return self;
 }
 
 @synthesize applicationIdentifier = _applicationIdentifier;
 @synthesize applicationVersion = _applicationVersion;
 @synthesize applicationMarketingVersion = _applicationMarketingVersion;
-
+@synthesize applicationData = _applicationData;
+@synthesize sessionId  = _sessionId;
 @end

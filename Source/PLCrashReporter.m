@@ -398,6 +398,8 @@ static void uncaught_exception_handler (NSException *exception) {
  */
 @implementation PLCrashReporter
 
+@synthesize sessionId = _sessionId;
+
 + (void) initialize {
     if (![[self class] isEqual: [PLCrashReporter class]])
         return;
@@ -489,6 +491,27 @@ static PLCrashReporter *sharedReporter = nil;
     return [NSData dataWithContentsOfFile: [self crashReportPath] options: NSMappedRead error: outError];
 }
 
+/**
+ * Set a block of application-specific data that will be added to the crash report.
+ *
+ * This method may be called multiple times. Each call will replace any previously-set
+ * application data.
+ *
+ * @param data A block of application-specific data.
+ *
+ * @note This method can only be called after the crash reporter has been enabled.
+ */
+- (void) setApplicationData: (NSData *)data {
+    /* We can only add application data after the reporter has been enabled. */
+    if (!_enabled)
+        [NSException raise: PLCrashReporterException format: @"The crash reporter has not been enabled"];
+
+    /* Pass this data to the writer (which will make a copy) */
+    if(data!=nil)
+        plcrash_log_writer_set_app_data(&signal_handler_context.writer, data.bytes, data.length);
+    else
+        plcrash_log_writer_set_app_data(&signal_handler_context.writer, nil, 0);
+}
 
 /**
  * Purge a pending crash report.
@@ -580,8 +603,10 @@ static PLCrashReporter *sharedReporter = nil;
     signal_handler_context.path = strdup([[self crashReportPath] UTF8String]); // NOTE: would leak if this were not a singleton struct
     assert(_applicationIdentifier != nil);
     assert(_applicationVersion != nil);
-    plcrash_log_writer_init(&signal_handler_context.writer, _applicationIdentifier, _applicationVersion, _applicationMarketingVersion, [self mapToAsyncSymbolicationStrategy: _config.symbolicationStrategy], false);
-
+    assert(_sessionId !=nil);
+    
+    plcrash_log_writer_init(&signal_handler_context.writer, _applicationIdentifier, _applicationVersion, _applicationMarketingVersion, _sessionId,[self mapToAsyncSymbolicationStrategy: _config.symbolicationStrategy], false);
+    
     /* Set custom data, if already set before enabling */
     if (self.customData != nil) {
         plcrash_log_writer_set_custom_data(&signal_handler_context.writer, self.customData);
@@ -707,7 +732,7 @@ static plcrash_error_t plcr_live_report_callback (plcrash_async_thread_state_t *
     }
 
     /* Initialize the output context */
-    plcrash_log_writer_init(&writer, _applicationIdentifier, _applicationVersion, _applicationMarketingVersion, [self mapToAsyncSymbolicationStrategy: _config.symbolicationStrategy], true);
+    plcrash_log_writer_init(&writer, _applicationIdentifier, _applicationVersion, _applicationMarketingVersion, _sessionId, [self mapToAsyncSymbolicationStrategy: _config.symbolicationStrategy], true);
     plcrash_async_file_init(&file, fd, MAX_REPORT_BYTES);
 
     /* Set custom data, if already set before enabling */
@@ -878,8 +903,8 @@ cleanup:
     NSString *appIdPath = [applicationIdentifier stringByReplacingOccurrencesOfString: @"/" withString: @"_"];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDir = [paths objectAtIndex: 0];
-    _crashReportDirectory = [[cacheDir stringByAppendingPathComponent: PLCRASH_CACHE_DIR] stringByAppendingPathComponent: appIdPath];
+    NSString *cacheDir = [paths objectAtIndex: 0];    
+    _crashReportDirectory = [[[cacheDir stringByAppendingPathComponent: PLCRASH_CACHE_DIR] stringByAppendingPathComponent: appIdPath] stringByAppendingPathComponent:@"CaMaa"];
     
     return self;
 }

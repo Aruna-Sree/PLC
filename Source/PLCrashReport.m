@@ -494,13 +494,26 @@ error:
         marketingVersion = [NSString stringWithUTF8String: applicationInfo->marketing_version];
     }
 
+    NSData *data = nil;
+    if (applicationInfo->has_data) {
+        data = [NSData dataWithBytes:applicationInfo->data.data
+                              length:applicationInfo->data.len];
+    }
+    
     /* Done */
     NSString *identifier = [NSString stringWithUTF8String: applicationInfo->identifier];
     NSString *version = [NSString stringWithUTF8String: applicationInfo->version];
 
-    return [[PLCrashReportApplicationInfo alloc] initWithApplicationIdentifier: identifier
-                                                             applicationVersion: version
-                                                    applicationMarketingVersion:marketingVersion];
+    NSString *sessionId = NULL;
+    if(applicationInfo->sessionid != NULL){
+        sessionId = [NSString stringWithUTF8String: applicationInfo->sessionid];
+    }
+
+    return  [[PLCrashReportApplicationInfo alloc] initWithApplicationIdentifier:identifier
+                                                             applicationVersion:version
+                                                    applicationMarketingVersion:marketingVersion
+                                                                      sessionId:sessionId
+                                                                applicationData:data];
 }
 
 

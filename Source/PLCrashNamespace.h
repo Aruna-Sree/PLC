@@ -35,7 +35,7 @@
  * This may be used to avoid symbol conflicts between multiple libraries
  * that may both incorporate PLCrashReporter.
  */
-// #define PLCRASHREPORTER_PREFIX AcmeCo
+#define PLCRASHREPORTER_PREFIX CaMaa
 
 
 // We need two extra layers of indirection to make CPP substitute
@@ -243,6 +243,7 @@
 #define plcrash_async_writen PLNS(plcrash_async_writen)
 #define plcrash_log_writer_close PLNS(plcrash_log_writer_close)
 #define plcrash_log_writer_free PLNS(plcrash_log_writer_free)
+#define plcrash_log_writer_set_app_data PLNS(plcrash_log_writer_set_app_data)
 #define plcrash_log_writer_init PLNS(plcrash_log_writer_init)
 #define plcrash_log_writer_set_exception PLNS(plcrash_log_writer_set_exception)
 #define plcrash_log_writer_write PLNS(plcrash_log_writer_write)
@@ -274,6 +275,20 @@
 #define plframe_cursor_read_frame_ptr PLNS(plframe_cursor_read_frame_ptr)
 #define plframe_cursor_thread_init PLNS(plframe_cursor_thread_init)
 #define plframe_strerror PLNS(plframe_strerror)
+
+//Adding missed symbols.
+
+#define plcrash_async_image_list_free PLNS(plcrash_async_image_list_free)
+#define plcrash_async_image_list_new_empty PLNS(plcrash_async_image_list_new_empty)
+#define plcrash_nasync_image_list_new PLNS(plcrash_nasync_image_list_new)
+#define plcrash_nasync_dynloader_new PLNS(plcrash_nasync_dynloader_new)
+#define plcrash_async_dynloader_read_image_list PLNS(plcrash_async_dynloader_read_image_list)
+#define plcrash_async_image_list_count PLNS(plcrash_async_image_list_count)
+#define plcrash_async_image_list_get_image PLNS(plcrash_async_image_list_get_image)
+#define plcrash_async_dynloader_free PLNS(plcrash_async_dynloader_free)
+#define plcrash_async_allocator_create PLNS(plcrash_async_allocator_create)
+#define plcrash_async_allocator_free PLNS(plcrash_async_allocator_free)
+#define plcrash_async_allocator_dealloc PLNS(plcrash_async_allocator_dealloc)
 
 #endif
 

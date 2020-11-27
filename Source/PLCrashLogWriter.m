@@ -91,7 +91,10 @@ enum {
     /** CrashReport.app_info.app_marketing_version */
     PLCRASH_PROTO_APP_INFO_APP_MARKETING_VERSION_ID = 3,
 
-
+    PLCRASH_PROTO_APP_INFO_SESSION_ID = 4,
+    
+    PLCRASH_PROTO_APP_INFO_APP_DATA_ID = 5,
+    
     /** CrashReport.symbol.name */
     PLCRASH_PROTO_SYMBOL_NAME = 1,
 
@@ -295,6 +298,7 @@ plcrash_error_t plcrash_log_writer_init (plcrash_log_writer_t *writer,
                                          NSString *app_identifier,
                                          NSString *app_version,
                                          NSString *app_marketing_version,
+                                         NSString *session_id,
                                          plcrash_async_symbol_strategy_t symbol_strategy,
                                          BOOL user_requested)
 {
@@ -324,6 +328,7 @@ plcrash_error_t plcrash_log_writer_init (plcrash_log_writer_t *writer,
         if (app_marketing_version != nil) {
             plprotobuf_cbinary_data_nsstring_init(&writer->application_info.app_marketing_version, app_marketing_version);
         }
+        writer->application_info.session_id = strdup([session_id UTF8String]);
     }
     
     /* Fetch the process information */
@@ -471,6 +476,24 @@ plcrash_error_t plcrash_log_writer_init (plcrash_log_writer_t *writer,
     return PLCRASH_ESUCCESS;
 }
 
+
+/**
+ * Set the block of application-specific data for this writer.
+ */
+void plcrash_log_writer_set_app_data (plcrash_log_writer_t *writer, const void *data, size_t len) {
+    if (writer->application_info.app_data != NULL) {
+        free(writer->application_info.app_data);
+        writer->application_info.app_data = NULL;
+        writer->application_info.app_data_len = 0;
+    }
+
+    if (data != NULL) {
+        writer->application_info.app_data_len = len;
+        writer->application_info.app_data = malloc(sizeof(void *) * len);
+        memcpy(writer->application_info.app_data, data, len);
+    }
+}
+
 /**
  * Set the uncaught exception for this writer. Once set, this exception will be used to
  * provide exception data for the crash log output.
@@ -541,6 +564,10 @@ void plcrash_log_writer_free (plcrash_log_writer_t *writer) {
     plprotobuf_cbinary_data_free(&writer->application_info.app_identifier);
     plprotobuf_cbinary_data_free(&writer->application_info.app_version);
     plprotobuf_cbinary_data_free(&writer->application_info.app_marketing_version);
+    if (writer->application_info.app_data != NULL)
+        free(writer->application_info.app_data);
+    if (writer->application_info.session_id != NULL)
+        free(writer->application_info.session_id);
 
     /* Free the process info */
     plprotobuf_cbinary_data_free(&writer->process_info.process_name);
@@ -677,7 +704,10 @@ static size_t plcrash_writer_write_machine_info (plcrash_async_file_t *file, plc
 static size_t plcrash_writer_write_app_info (plcrash_async_file_t *file,
                                              PLProtobufCBinaryData *app_identifier,
                                              PLProtobufCBinaryData *app_version,
-                                             PLProtobufCBinaryData *app_marketing_version) {
+                                             PLProtobufCBinaryData *app_marketing_version,
+                                             const char *session_id,
+                                             void *app_data,
+                                             size_t app_data_len) {
     size_t rv = 0;
 
     /* App identifier */
@@ -690,6 +720,20 @@ static size_t plcrash_writer_write_app_info (plcrash_async_file_t *file,
     if (app_marketing_version != NULL)
         rv += plcrash_writer_pack(file, PLCRASH_PROTO_APP_INFO_APP_MARKETING_VERSION_ID, PLPROTOBUF_C_TYPE_BYTES, app_marketing_version);
     
+    /* Session identifier */
+      rv += plcrash_writer_pack(file, PLCRASH_PROTO_APP_INFO_SESSION_ID, PLPROTOBUF_C_TYPE_STRING, session_id);
+
+
+      /* App data */
+      if (app_data != NULL) {
+          PLProtobufCBinaryData binary;
+
+          /* Write the 128-bit UUID */
+          binary.len = app_data_len;
+          binary.data = app_data;
+
+          rv += plcrash_writer_pack(file, PLCRASH_PROTO_APP_INFO_APP_DATA_ID, PLPROTOBUF_C_TYPE_BYTES, &binary);
+      }
     return rv;
 }
 
@@ -1310,11 +1354,11 @@ plcrash_error_t plcrash_log_writer_write (plcrash_log_writer_t *writer,
         uint32_t size;
 
         /* Determine size */
-        size = (uint32_t) plcrash_writer_write_app_info(NULL, &writer->application_info.app_identifier, &writer->application_info.app_version, &writer->application_info.app_marketing_version);
+        size = (uint32_t) plcrash_writer_write_app_info(NULL, &writer->application_info.app_identifier, &writer->application_info.app_version, &writer->application_info.app_marketing_version,writer->application_info.session_id ,writer->application_info.app_data, writer->application_info.app_data_len);
         
         /* Write message */
         plcrash_writer_pack(file, PLCRASH_PROTO_APP_INFO_ID, PLPROTOBUF_C_TYPE_MESSAGE, &size);
-        plcrash_writer_write_app_info(file, &writer->application_info.app_identifier, &writer->application_info.app_version, &writer->application_info.app_marketing_version);
+        plcrash_writer_write_app_info(file, &writer->application_info.app_identifier, &writer->application_info.app_version, &writer->application_info.app_marketing_version,writer->application_info.session_id,writer->application_info.app_data, writer->application_info.app_data_len);
     }
     
     /* Process info */

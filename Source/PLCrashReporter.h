@@ -109,7 +109,15 @@ typedef struct PLCrashReporterCallbacks {
 
     /** Path to the crash reporter internal data directory */
     __strong NSString *_crashReportDirectory;
+    
+    /** AXA_SDK Session Id **/
+    __strong NSString *_sessionId;
 }
+
+/** AXA_SDK Start **/
+@property (nonatomic,retain, strong) NSString *sessionId;
+- (void) setApplicationData: (NSData *) data;
+/** AXA_SDK End  **/
 
 + (PLCrashReporter *) sharedReporter PLCR_DEPRECATED;
 

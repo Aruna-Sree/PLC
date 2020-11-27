@@ -229,6 +229,7 @@ static NSInteger binaryImageSort(id binary1, id binary2, void *context);
         [text appendFormat: @"Process:         %@ [%@]\n", processName, processId];
         [text appendFormat: @"Path:            %@\n", processPath];
         [text appendFormat: @"Identifier:      %@\n", report.applicationInfo.applicationIdentifier];
+        [text appendFormat:@"SessionId:        %@\n",report.applicationInfo.sessionId];
         [text appendFormat: @"Version:         %@\n", versionString];
         [text appendFormat: @"Code Type:       %@\n", codeType];
         [text appendFormat: @"Parent Process:  %@ [%@]\n", parentProcessName, parentProcessId];

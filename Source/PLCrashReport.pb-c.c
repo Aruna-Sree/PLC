@@ -355,7 +355,7 @@ const ProtobufCMessageDescriptor plcrash__crash_report__system_info__descriptor 
   (ProtobufCMessageInit) plcrash__crash_report__system_info__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor plcrash__crash_report__application_info__field_descriptors[3] =
+static const ProtobufCFieldDescriptor plcrash__crash_report__application_info__field_descriptors[5] =
 {
   {
     "identifier",
@@ -393,16 +393,42 @@ static const ProtobufCFieldDescriptor plcrash__crash_report__application_info__f
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "sessionId",
+    4,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(Plcrash__CrashReport__ApplicationInfo, sessionid),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "data",
+    5,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_BYTES,
+    offsetof(Plcrash__CrashReport__ApplicationInfo, has_data),
+    offsetof(Plcrash__CrashReport__ApplicationInfo, data),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned plcrash__crash_report__application_info__field_indices_by_name[] = {
+  4,   /* field[4] = data */
   0,   /* field[0] = identifier */
   2,   /* field[2] = marketing_version */
+  3,   /* field[3] = sessionId */
   1,   /* field[1] = version */
 };
 static const ProtobufCIntRange plcrash__crash_report__application_info__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor plcrash__crash_report__application_info__descriptor =
 {
@@ -412,7 +438,7 @@ const ProtobufCMessageDescriptor plcrash__crash_report__application_info__descri
   "Plcrash__CrashReport__ApplicationInfo",
   "plcrash",
   sizeof(Plcrash__CrashReport__ApplicationInfo),
-  3,
+  5,
   plcrash__crash_report__application_info__field_descriptors,
   plcrash__crash_report__application_info__field_indices_by_name,
   1,  plcrash__crash_report__application_info__number_ranges,

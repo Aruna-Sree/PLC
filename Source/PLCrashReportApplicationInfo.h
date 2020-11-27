@@ -38,11 +38,18 @@
     
     /** Application marketing version */
     __strong NSString *_applicationMarketingVersion;
+    
+    /** AXA_SDK Session Id **/
+    __strong NSString *_sessionId;
+    __strong NSData *_applicationData;
+    /***/
 }
 
 - (id) initWithApplicationIdentifier: (NSString *) applicationIdentifier 
                   applicationVersion: (NSString *) applicationVersion
-         applicationMarketingVersion: (NSString *) applicationMarketingVersion;
+         applicationMarketingVersion: (NSString *) applicationMarketingVersion
+                          sessionId : (NSString *) sessionId
+                     applicationData: (NSData *)   applicationData;
 
 /**
  * The application identifier. This is usually the application's CFBundleIdentifier value.
@@ -59,4 +66,13 @@
  */
 @property(nonatomic, readonly, strong) NSString *applicationMarketingVersion;
 
+/** AXA_SDK Start*/
+/** Application Data :
+ */
+@property(nonatomic,readonly, strong) NSData *applicationData;
+
+/** Session id for camaa mobile analytics .
+ */
+@property(nonatomic,readonly, strong) NSString *sessionId;
+/** AXA_SDK End*/
 @end

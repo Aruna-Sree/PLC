@@ -192,10 +192,16 @@ struct  _Plcrash__CrashReport__ApplicationInfo
    * Application marketing version string 
    */
   char *marketing_version;
+  /*
+   *Session Id String 
+   */
+  char *sessionid;
+  protobuf_c_boolean has_data;
+  ProtobufCBinaryData data;
 };
 #define PLCRASH__CRASH_REPORT__APPLICATION_INFO__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&plcrash__crash_report__application_info__descriptor) \
-    , NULL, NULL, NULL }
+    , NULL, NULL, NULL, NULL, 0, {0,NULL} }
 
 
 /*

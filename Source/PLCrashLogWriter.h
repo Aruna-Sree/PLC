@@ -112,6 +112,15 @@ typedef struct plcrash_log_writer {
         
         /** Application marketing version (may be null) */
         PLProtobufCBinaryData app_marketing_version;
+        
+        /** Session identifier */
+        char *session_id;
+
+        /** Application-specific data */
+        void *app_data;
+
+        /** Application-specific data length */
+        size_t app_data_len;
     } application_info;
     
     /** Process data */
@@ -221,6 +230,7 @@ plcrash_error_t plcrash_log_writer_init (plcrash_log_writer_t *writer,
                                          NSString *app_identifier,
                                          NSString *app_version,
                                          NSString *app_marketing_version,
+                                         NSString *sessionId,
                                          plcrash_async_symbol_strategy_t symbol_strategy,
                                          BOOL user_requested);
 void plcrash_log_writer_set_exception (plcrash_log_writer_t *writer, NSException *exception);
@@ -236,6 +246,8 @@ plcrash_error_t plcrash_log_writer_write (plcrash_log_writer_t *writer,
 
 plcrash_error_t plcrash_log_writer_close (plcrash_log_writer_t *writer);
 void plcrash_log_writer_free (plcrash_log_writer_t *writer);
+
+void plcrash_log_writer_set_app_data(plcrash_log_writer_t *writer, const void *data, size_t len) ;
 
 /*
  * @} plcrash_log_writer
